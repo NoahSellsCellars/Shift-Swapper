@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h2>My Schedule</h2>
+    <hr>
+    
+    {% if shifts %}
+    <div class="row">
+        {% for shift in shifts %}
+        <div class="col-md-4 mb-3">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">{{ shift.role }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ shift.start_time.strftime('%b %d, %Y') }}</h6>
+                    <p class="card-text">
+                        {{ shift.start_time.strftime('%I:%M %p') }} - {{ shift.end_time.strftime('%I:%M %p') }}
+                    </p>
+                    
+                    <div class="d-grid gap-2">
+                        {% if shift.is_up_for_trade %}
+                            <div class="alert alert-warning py-1 text-center mb-1">Posted for Trade</div>
+                            <form action="{{ url_for('keep_shift', shift_id=shift.id) }}" method="POST">
+                                <button class="btn btn-outline-secondary btn-sm w-100">Cancel Trade (Keep)</button>
+                            </form>
+                        {% else %}
+                            <form action="{{ url_for('post_shift', shift_id=shift.id) }}" method="POST">
+                                <button class="btn btn-outline-primary btn-sm w-100">Post for Trade</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+        <div class="alert alert-secondary text-center">
+            You do not currently have any shifts. 
+            <a href="{{ url_for('index') }}" class="alert-link">Go find one!</a>
+        </div>
+    {% endif %}
+
+{% endblock %}
